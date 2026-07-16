@@ -14,14 +14,17 @@ import java.net.URI;
 @Configuration
 public class S3Config {
 
-    @Value("${r2.access-key}")
+    @Value("${storage.access-key}")
     private String accessKey;
 
-    @Value("${r2.secret-key}")
+    @Value("${storage.secret-key}")
     private String secretKey;
 
-    @Value("${r2.endpoint}")
+    @Value("${storage.endpoint}")
     private String endpoint;
+
+    @Value("${storage.region:auto}")
+    private String region;
 
     @Bean
     public S3Client s3Client(){
@@ -29,7 +32,7 @@ public class S3Config {
 
         S3ClientBuilder builder = S3Client.builder()
                 .credentialsProvider(StaticCredentialsProvider.create(credentials))
-                .region(Region.of("auto"));//Usar "auto" para R2, ya que no requiere una región específica, pero para S3 se debe especificar una región
+                .region(Region.of(region));//Usar "auto" para R2, ya que no requiere una región específica, pero para S3 se debe especificar una región
 
         if (endpoint != null && !endpoint.isBlank()) {
             builder.endpointOverride(URI.create(endpoint));

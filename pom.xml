@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.cloudfare.r2</groupId>
-    <artifactId>cloudfare-r2-test</artifactId>
+    <artifactId>storage-api-test</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>cloudfare-r2-test</name>
     <description>cloudfare-r2-test</description>

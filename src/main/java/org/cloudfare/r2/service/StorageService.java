@@ -15,16 +15,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class R2Service {
+public class StorageService {
 
     private final S3Client s3Client;
-    private final Logger logger = LoggerFactory.getLogger(R2Service.class);
+    private final Logger logger = LoggerFactory.getLogger(StorageService.class);
 
-    public R2Service(S3Client s3Client){
+    public StorageService(S3Client s3Client){
         this.s3Client = s3Client;
     }
 
-    @Value("${r2.bucket-name}")
+    @Value("${storage.bucket-name}")
     private String bucketName;
 
     //Cargar archivos al bucket de R2

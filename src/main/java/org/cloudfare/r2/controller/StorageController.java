@@ -1,6 +1,6 @@
 package org.cloudfare.r2.controller;
 
-import org.cloudfare.r2.service.R2Service;
+import org.cloudfare.r2.service.StorageService;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,11 +14,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/r2")
-public class R2Controller {
+public class StorageController {
 
-    private final R2Service r2Service;
+    private final StorageService r2Service;
 
-    public R2Controller(R2Service r2Service){
+    public StorageController(StorageService r2Service){
         this.r2Service = r2Service;
     }
 

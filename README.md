@@ -32,15 +32,16 @@ Al ser R2 compatible con la API de S3, este mismo código funciona indistintamen
 Crea un archivo `.env` en la raíz del proyecto (mismo nivel que `pom.xml`):
 
 ```env
-R2_ACCESS_KEY_ID=tu_access_key
-R2_SECRET_KEY=tu_secret_key
-R2_ENDPOINT=https://<ACCOUNT_ID>.r2.cloudflarestorage.com
-R2_BUCKET_NAME=nombre-de-tu-bucket
+STORAGE_ACCESS_KEY_ID=tu_access_key
+STORAGE_SECRET_KEY=tu_secret_key
+STORAGE_ENDPOINT=https://<ACCOUNT_ID>.r2.cloudflarestorage.com
+STORAGE_BUCKET_NAME=nombre-de-tu-bucket
+STORAGE_REGION=nombre-de-la-region
 ```
 
 ### Usar con AWS S3 en vez de R2
 
-Para apuntar a un bucket real de S3, deja `R2_ENDPOINT` vacío y ajusta la región en `S3Config`. El SDK detecta automáticamente el endpoint correcto de AWS cuando no se define un `endpointOverride`.
+Para apuntar a un bucket real de S3, deja `STORAGE_ENDPOINT` y  `STORAGE_REGION` vacíos. El SDK detecta automáticamente el endpoint correcto de AWS cuando no se define un `endpointOverride`.
 
 ## ▶️ Ejecución
 
