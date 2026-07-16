@@ -7,6 +7,7 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3ClientBuilder;
 
 import java.net.URI;
 
@@ -26,12 +27,15 @@ public class S3Config {
     public S3Client s3Client(){
         AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKey, secretKey);
 
-        return S3Client.builder()
-                .endpointOverride(URI.create(endpoint))
+        S3ClientBuilder builder = S3Client.builder()
                 .credentialsProvider(StaticCredentialsProvider.create(credentials))
-                //R2 no usa regiones pero el SDK de AWS requiere una, así que usamos "auto" como región ficticia
-                .region(Region.of("auto"))
-                .build();
+                .region(Region.of("auto"));//Usar "auto" para R2, ya que no requiere una región específica, pero para S3 se debe especificar una región
+
+        if (endpoint != null && !endpoint.isBlank()) {
+            builder.endpointOverride(URI.create(endpoint));
+        }
+
+        return builder.build();
 
     }
 }
