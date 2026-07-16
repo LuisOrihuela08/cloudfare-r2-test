@@ -1,3 +1,4 @@
+<img width="1171" height="335" alt="Image" src="https://github.com/user-attachments/assets/521eed34-1e4e-44c7-ab6b-764670021d3b" />
 # Cloudflare R2 Test API
 
 Proyecto base para aprender a interactuar con almacenamiento de objetos (Cloudflare R2 y AWS S3) desde una API REST construida con **Java 17** y **Spring Boot**, utilizando el **AWS SDK v2**.
