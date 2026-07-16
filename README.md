@@ -55,10 +55,10 @@ La API queda disponible en `http://localhost:8080`.
 
 | Método | Endpoint                     | Descripción                          |
 |--------|-------------------------------|---------------------------------------|
-| POST   | `/api/files/upload`          | Sube un archivo (`file` como form-data) |
-| GET    | `/api/files/download/{key}`  | Descarga/previsualiza un archivo      |
-| GET    | `/api/files/list`            | Lista los archivos del bucket         |
-| DELETE | `/api/files/{key}`           | Elimina un archivo por su key         |
+| POST   | `/storage/upload`          | Sube un archivo (`file` como form-data) |
+| GET    | `/storage/download/{key}`  | Descarga/previsualiza un archivo      |
+| GET    | `/storage/list`            | Lista los archivos del bucket         |
+| DELETE | `/storage/{key}`           | Elimina un archivo por su key         |
 
 ## 📌 Notas
 

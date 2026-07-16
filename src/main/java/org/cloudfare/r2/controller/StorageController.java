@@ -13,24 +13,24 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/r2")
+@RequestMapping("/storage")
 public class StorageController {
 
-    private final StorageService r2Service;
+    private final StorageService storageService;
 
-    public StorageController(StorageService r2Service){
-        this.r2Service = r2Service;
+    public StorageController(StorageService storageService){
+        this.storageService = storageService;
     }
 
     @PostMapping("/upload")
     public ResponseEntity<Map<String,String>> upload(@RequestParam("file") MultipartFile file) throws IOException {
-        String key = r2Service.uploadFile(file);
+        String key = storageService.uploadFile(file);
         return new ResponseEntity<>(Map.of("mensaje", "Archivo subido con el nombre: " + key), HttpStatus.OK);
     }
 
     @GetMapping("/download/{key}")
     public ResponseEntity<InputStreamResource> dowload(@PathVariable String key){
-        var s3Object = r2Service.downloadFile(key);
+        var s3Object = storageService.downloadFile(key);
         InputStreamResource resource = new InputStreamResource(s3Object);
 
         String contentType = s3Object.response().contentType();
@@ -46,13 +46,13 @@ public class StorageController {
 
     @GetMapping("/list")
     public ResponseEntity<Map<String, List<String>>> listFiles(){
-        List<String> listFiles = r2Service.listFiles();
+        List<String> listFiles = storageService.listFiles();
         return new ResponseEntity<>(Map.of("archivos", listFiles), HttpStatus.OK);
     }
 
     @DeleteMapping("/{key}")
     public ResponseEntity<Map<String,String>> deleteFile(@PathVariable String key){
-        r2Service.deleteFile(key);
+        storageService.deleteFile(key);
         return new ResponseEntity<>(Map.of("mensaje", "Archivo eliminado con la key: " + key), HttpStatus.OK);
     }
 }
