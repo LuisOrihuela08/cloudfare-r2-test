@@ -32,7 +32,8 @@ public class S3Config {
 
         S3ClientBuilder builder = S3Client.builder()
                 .credentialsProvider(StaticCredentialsProvider.create(credentials))
-                .region(Region.of(region));//Usar "auto" para R2, ya que no requiere una región específica, pero para S3 se debe especificar una región
+                .region(Region.of(region))//Usar "auto" para R2, ya que no requiere una región específica, pero para S3 se debe especificar una región
+                .forcePathStyle(true);
 
         if (endpoint != null && !endpoint.isBlank()) {
             builder.endpointOverride(URI.create(endpoint));

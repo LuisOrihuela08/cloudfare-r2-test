@@ -19,6 +19,7 @@ public class StorageService {
 
     private final S3Client s3Client;
     private final Logger logger = LoggerFactory.getLogger(StorageService.class);
+    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024;
 
     public StorageService(S3Client s3Client){
         this.s3Client = s3Client;
@@ -27,10 +28,26 @@ public class StorageService {
     @Value("${storage.bucket-name}")
     private String bucketName;
 
-    //Cargar archivos al bucket de R2
+    //Upload files to bucket R2 or AWS S3
     public String uploadFile(MultipartFile file) throws IOException {
+
+        if (file == null || file.isEmpty()){
+            logger.warn("file is empty");
+            throw new IllegalArgumentException("File is null or empty");
+        }
+
+        if (file.getSize() > MAX_FILE_SIZE) {
+            logger.warn("file exceeds the maximum allowed size (10 MB)");
+            throw new IllegalArgumentException("The file exceeds the maximum allowed size (10 MB)");
+        }
+
+        String key = file.getOriginalFilename();
+        if (key == null || key.isBlank()){
+            logger.warn("file name is empty");
+            throw new IllegalArgumentException("File name is null or empty");
+        }
+
         try {
-            String key = file.getOriginalFilename();
 
             PutObjectRequest request = PutObjectRequest.builder().bucket(bucketName)
                     .key(key)
@@ -38,16 +55,16 @@ public class StorageService {
                     .build();
             s3Client.putObject(request, RequestBody.fromBytes(file.getBytes()));
 
-            logger.info("Upload File Successfully");
+            logger.info("Upload File Successfully: {}", key);
             return key;
-        } catch (Exception e){
-            logger.error("Error al subir el archivo: " + e.getMessage());
-            throw new IOException("Error al subir el archivo", e);
+        } catch (S3Exception  e){
+            logger.error("Upload File Failed to S3: '{}'", key, e);
+            throw new IOException("Upload File Failed", e);
         }
 
     }
 
-    //Descargar archivos del bucket de R2
+    //Download files from bucket R2 or AWS S3
     public ResponseInputStream<GetObjectResponse> downloadFile(String key) {
         try {
             GetObjectRequest request = GetObjectRequest.builder()
@@ -55,16 +72,20 @@ public class StorageService {
                     .key(key)
                     .build();
 
-            logger.info("Download File Successfully");
-            return s3Client.getObject(request);
-        } catch (Exception e) {
-            logger.error("Error al descargar el archivo: " + e.getMessage());
-            throw new RuntimeException("Error al descargar el archivo", e);
+            ResponseInputStream<GetObjectResponse> object = s3Client.getObject(request);
+            logger.info("Download File Successfully: {}", key);
+            return object;
+        } catch (NoSuchKeyException  e) {
+            logger.warn("File not found: {} ", key);
+            throw e;
+        } catch (S3Exception e){
+            logger.error("Error downloading file: {} ", key, e);
+            throw new RuntimeException("Error downloading file: "+ key);
         }
 
     }
 
-    //Listar los archivos en el bucket de R2
+    //List files in the bucket of R2 or AWS S3
     public List<String> listFiles(){
         try {
             ListObjectsV2Request request = ListObjectsV2Request.builder().bucket(bucketName)
@@ -76,15 +97,25 @@ public class StorageService {
             return response.contents().stream()
                     .map(S3Object::key)
                     .collect(Collectors.toList());
-        } catch (Exception e) {
-            logger.error("Error al listar los archivos: " + e.getMessage());
-            throw new RuntimeException("Error al listar los archivos", e);
+        } catch (S3Exception  e) {
+            logger.error("Error to list files: ", e);
+            throw new RuntimeException("Error to list files from bucket", e);
         }
 
     }
 
-    //Eliminar un archivo en el bucket de R2
+    //Delete files in the bucket of R2 or AWS S3
     public void deleteFile(String key){
+        try {
+            s3Client.headObject(HeadObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .build());
+        } catch (NoSuchKeyException e) {
+            logger.warn("Try delete file not found: {}", key);
+            throw e;
+        }
+
         try {
             DeleteObjectRequest request = DeleteObjectRequest.builder().bucket(bucketName)
                     .key(key)
@@ -93,8 +124,8 @@ public class StorageService {
             logger.info("Delete File Successfully");
             s3Client.deleteObject(request);
         } catch (Exception e) {
-            logger.error("Error al eliminar el archivo: " + e.getMessage());
-            throw new RuntimeException("Error al eliminar el archivo", e);
+            logger.error("Error to try delete file: " + e.getMessage());
+            throw new RuntimeException("Error to try delete file", e);
         }
 
     }
